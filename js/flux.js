@@ -1,18 +1,19 @@
-#    Flux, XML visualization and editing Javascript library.
-#    Copyright (C) 2014 Benjamin Merot (ben@busyasabee.org)
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+/*
+    Flux, XML visualization and editing Javascript library.
+    Copyright (C) 2014 Benjamin Merot (ben@busyasabee.org)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 var latestData;
 var detailBoxId;
@@ -28,7 +29,7 @@ function doFlux(sourceContainerId, treeContainerId, detailContainerId) {
 	var computedData = {};
 	computedData["name"] = xml.childNodes[0].tagName;
 	computedData["children"] = iterXmlChild(xml.childNodes[0].childNodes);
-	buildTree(computedData);
+	buildTree(computedData, treeContainerId);
 }
 
 function print(outputContainer){
@@ -142,7 +143,7 @@ function showNodeDetails(d){
 	}
 }
 
-function buildTree(data) {
+function buildTree(data, treeContainerId) {
 	var totalNodes = 0;
 	var maxLabelLength = 0;
 	var selectedNode = null;
@@ -152,8 +153,8 @@ function buildTree(data) {
 	var i = 0;
 	var duration = 750;
 	var root;
-	var viewerWidth = $("#treeContainer").width();
-	var viewerHeight = $("#treeContainer").height();
+	var viewerWidth = elementById(treeContainerId).offsetWidth;
+	var viewerHeight = elementById(treeContainerId).offsetHeight;
 
 	var tree = d3.layout.tree().size([viewerHeight, viewerWidth]);
 	var diagonal = d3.svg.diagonal()
