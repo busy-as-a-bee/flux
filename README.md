@@ -25,6 +25,6 @@ The graphic representation og the XML document is done in a Div. A second Div is
 		  		<textarea rows="6" cols="140" id="xmloutput"></textarea> 
 		  	</div>
 ```
-Optionally the CodeMirror library can be used to improve de visibility of the markup in the TextArea.
+Optionally the CodeMirror library can be used to improve the visibility of the markup in the TextArea.
 ### Requirements
 The D3js library version 3 or higher.
