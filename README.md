@@ -17,8 +17,8 @@ The graphic representation og the XML document is done in a Div. A second Div is
 	  			<button onclick="doFlux('xmlinput', 'treeContainer', 'nodeDetails')">Flux</button>
 		  	</div>
 			<div>
-		  		<div id="treeContainer"/>
-				<div id="nodeDetails"/>
+		  		<div id="treeContainer"></div>
+				<div id="nodeDetails"></div>
 			</div>
 		  	<div>
 		  		<input type="button" onclick="print('xmloutput')" value="Print"/><br/>
