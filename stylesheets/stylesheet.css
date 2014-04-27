@@ -49,6 +49,7 @@ Theme Styles
 *******************************************************************************/
 
 body {
+  margin: 0px;
   box-sizing: border-box;
   color:#373737;
   background: #212121;
@@ -264,14 +265,14 @@ Full-Width Styles
 
 .inner {
   position: relative;
-  max-width: 640px;
+  max-width: 720px;
   padding: 20px 10px;
   margin: 0 auto;
 }
 
 #forkme_banner {
-  display: block;
-  position: absolute;
+  float: right;
+  display: block;  
   top:0;
   right: 10px;
   z-index: 10;
@@ -285,6 +286,7 @@ Full-Width Styles
 }
 
 #header_wrap {
+  height: 130px;
   background: #212121;
   background: -moz-linear-gradient(top, #373737, #212121);
   background: -webkit-linear-gradient(top, #373737, #212121);
@@ -294,10 +296,11 @@ Full-Width Styles
 }
 
 #header_wrap .inner {
-  padding: 50px 10px 30px 10px;
+  padding: 0px 10px 0px 10px;
 }
 
 #project_title {
+  float: left;
   margin: 0;
   color: #fff;
   font-size: 42px;
@@ -356,6 +359,7 @@ Full-Width Styles
   background: #f2f2f2;
   border-top: 1px solid #111;
   border-bottom: 1px solid #111;
+  height: 800px;
 }
 
 #main_content {
@@ -366,58 +370,6 @@ Full-Width Styles
   background: #212121;
 }
 
-
-
-/*******************************************************************************
-Small Device Styles
-*******************************************************************************/
-
-@media screen and (max-width: 480px) {
-  body {
-    font-size:14px;
-  }
-
-  #downloads {
-    display: none;
-  }
-
-  .inner {
-    min-width: 320px;
-    max-width: 480px;
-  }
-
-  #project_title {
-  font-size: 32px;
-  }
-
-  h1 {
-    font-size: 28px;
-  }
-
-  h2 {
-    font-size: 24px;
-  }
-
-  h3 {
-    font-size: 21px;
-  }
-
-  h4 {
-    font-size: 18px;
-  }
-
-  h5 {
-    font-size: 14px;
-  }
-
-  h6 {
-    font-size: 12px;
-  }
-
-  code, pre {
-    min-width: 320px;
-    max-width: 480px;
-    font-size: 11px;
-  }
-
+#footer_wrap .inner {
+	padding: 0px 10px 0px 10px;
 }

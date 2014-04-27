@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="description" content="Flux : Web based XML visualization and editing tool" />
-
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
+	<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/flux.css">
+	<script src="javascripts/d3.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="javascripts/flux.js" type="text/javascript" charset="utf-8"></script>
     <title>Flux</title>
   </head>
-
   <body>
 
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/busy-as-a-bee/flux">View on GitHub</a>
-
-          <h1 id="project_title">Flux</h1>
-          <h2 id="project_tagline">Web based XML visualization and editing tool</h2>
-
+          <div class="inner" style="height: 40px;">
+			  <span id="project_title">Flux</span>
+			  <a id="forkme_banner" href="https://github.com/busy-as-a-bee/flux">View on GitHub</a>
+		  </div>
+          <div class="inner" style="padding: 10px 0px 10px 0px;">
+          	<h2 id="project_tagline">XML visualization and editing library on the web</h2>
+	  	  </div>
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/busy-as-a-bee/flux/zipball/master">Download this project as a .zip file</a>
               <a class="tar_download_link" href="https://github.com/busy-as-a-bee/flux/tarball/master">Download this project as a tar.gz file</a>
@@ -30,23 +31,32 @@
 
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a name="flux" class="anchor" href="#flux"><span class="octicon octicon-link"></span></a>Flux.</h3>
-
-<p>Benjamin Merot (<a href="https://github.com/tux-o-matic" class="user-mention">@tux-o-matic</a>)</p>
-      </section>
+		<section id="main_content" class="inner">
+			<div>
+				<textarea rows="6" cols="100" id="xmlinput"><?xml version="1.0" encoding="UTF-8"?><creature><animal><feline><cat><age>3</age></cat><tiger><age>5</age></tiger></feline></animal><human><boy name="John"><origin>Ireland</origin></boy><girl name="Jane"><origin>Canada</origin></girl></human></creature></textarea> 
+				<button onclick="doFlux('xmlinput', 'treeContainer', 'nodeDetails')">Flux It</button>
+			</div>
+			<div>
+				<div id="treeContainer"></div>
+				<div id="nodeDetails"></div>
+			</div>
+			<div>
+				<span>Click on a node to see its details. Double click to hide children. Drag and drop to change parent.</span><br/>
+				<input type="button" onclick="print('xmloutput')" value="Back to XML"/><br/>
+				<textarea rows="6" cols="100" id="xmloutput"></textarea> 
+			</div>
+		</section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">Flux maintained by <a href="https://github.com/busy-as-a-bee">busy-as-a-bee</a></p>
+        <p class="copyright">Benjamin Merot (<a href="https://github.com/tux-o-matic" class="user-mention">@tux-o-matic</a>)</a></p>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
 
-              <script type="text/javascript">
+           <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -56,7 +66,5 @@
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
-
   </body>
 </html>
