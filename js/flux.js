@@ -25,7 +25,7 @@ function elementById(id){
 function doFlux(sourceContainerId, treeContainerId, detailContainerId) {
 	detailBoxId = detailContainerId;
 	elementById(treeContainerId).innerHTML = "";
-	var xml = parseXml(elementById(sourceContainerId).value);
+	var xml = parseXml(elementById(sourceContainerId).value.trim());
 	var computedData = {};
 	computedData["name"] = xml.childNodes[0].tagName;
 	computedData["children"] = iterXmlChild(xml.childNodes[0].childNodes);
@@ -33,7 +33,7 @@ function doFlux(sourceContainerId, treeContainerId, detailContainerId) {
 }
 
 function print(outputContainer){
-	elementById(outputContainer).value = buildXml(latestData);
+	elementById(outputContainer).value = '<?xml version="1.0" encoding="UTF-8"?>' + buildXml(latestData);
 }
 
 function buildXml(data){
@@ -117,29 +117,33 @@ function iterXmlChild(nodes) {
 	return children;
 }
 
-function showNodeDetails(d){
-	if(detailBoxId !== undefined){
-		elementById(detailBoxId).value = "";
-		var pN = document.createElement("p");
-		pN.innerHTML = "Node name: " + (d.name || "");
-		elementById(detailBoxId).appendChild(pN);
-		var pV = document.createElement("p");
-		pV.innerHTML = "Node value: " + (d.textContent || "");
-		elementById(detailBoxId).appendChild(pV);
-		if(d.attributes !== undefined && d.attributes.length > 0){
-			var pA = document.createElement("p");
-			pA.innerHTML = "Attributes:";
-			elementById(detailBoxId).appendChild(pA);
-			var ul = document.createElement("ul");
-			for(var a = 0; a < d.attributes.length; a++){
-				var li = document.createElement("li");
-				li.innerHTML = (d.attributes[a].name || "") + ":" + (d.attributes[a].value || "");
-				ul.appendChild(li);
+function showNodeDetails(d) {
+	if (detailBoxId !== undefined) {
+		if (elementById(detailBoxId) !== undefined) {
+			elementById(detailBoxId).innerHTML = "";
+			var pN = document.createElement("p");
+			pN.innerHTML = "Node name: " + (d.name || "");
+			elementById(detailBoxId).appendChild(pN);
+			if (d.children === undefined || d.children.length === 0) {
+				var pV = document.createElement("p");
+				pV.innerHTML = "Node value: " + (d.textContent || "");
+				elementById(detailBoxId).appendChild(pV);
 			}
-			elementById(detailBoxId).appendChild(ul);
+			if (d.attributes !== undefined && d.attributes.length > 0) {
+				var pA = document.createElement("p");
+				pA.innerHTML = "Attributes:";
+				elementById(detailBoxId).appendChild(pA);
+				var ul = document.createElement("ul");
+				for (var a = 0; a < d.attributes.length; a++) {
+					var li = document.createElement("li");
+					li.innerHTML = (d.attributes[a].name || "") + ":" + (d.attributes[a].value || "");
+					ul.appendChild(li);
+				}
+				elementById(detailBoxId).appendChild(ul);
+			}
+			//Show edit button and write modification back in d.
+			elementById(detailBoxId).style.display = "block";
 		}
-		//Show edit button and write modification back in d.
-		elementById(detailBoxId).style.display = "block";
 	}
 }
 
@@ -421,10 +425,15 @@ function buildTree(data, treeContainerId) {
 
 	function click(d) {
 		if (d3.event.defaultPrevented) return;
+		centerNode(d);		
+		showNodeDetails(d);
+	}
+	
+	function dblclick(d) {
+		if (d3.event.defaultPrevented) return;
 		d = toggleChildren(d);
 		update(d);
-		centerNode(d);		
-		showNodeDetails(d); //Might want to change event triggering this
+		centerNode(d);
 	}
 
 	function update(source) {
@@ -456,7 +465,8 @@ function buildTree(data, treeContainerId) {
 			.attr("transform", function(d) {
 				return "translate(" + source.y0 + "," + source.x0 + ")";
 			})
-			.on('click', click);
+			.on('click', click)
+			.on('dblclick', dblclick);
 		nodeEnter.append("circle")
 			.attr('class', 'nodeCircle')
 			.attr("r", 0)
