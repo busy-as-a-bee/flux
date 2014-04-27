@@ -1,5 +1,7 @@
 # Flux #
 
+### Try it out on http://flux.busyasabee.org
+
 ## Javascript library to visualize XML documents.
 - Parses XML document and renders a graphic representation of nodes using D3.
 - Allows to change an element's parent via drag and drop.
