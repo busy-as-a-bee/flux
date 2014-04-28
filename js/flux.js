@@ -18,6 +18,7 @@
 var latestData;
 var selectedNode;
 var detailBoxId;
+var treeId;
 
 function elementById(id){
 	return document.getElementById(id);
@@ -25,12 +26,12 @@ function elementById(id){
 
 function doFlux(sourceContainerId, treeContainerId, detailContainerId) {
 	detailBoxId = detailContainerId;
-	elementById(treeContainerId).innerHTML = "";
+	treeId =treeContainerId;
 	var xml = parseXml(elementById(sourceContainerId).value.trim());
 	var computedData = {};
 	computedData["name"] = xml.childNodes[0].tagName;
 	computedData["children"] = iterXmlChild(xml.childNodes[0].childNodes);
-	buildTree(computedData, treeContainerId);
+	buildTree(computedData, treeId);
 }
 
 function print(outputContainer){
@@ -123,7 +124,11 @@ function showNodeDetails(d) {
 		if (elementById(detailBoxId) !== undefined) {
 			elementById(detailBoxId).innerHTML = "";
 			var pN = document.createElement("p");
-			pN.innerHTML = "Node name: " + (d.name || "");
+			pN.innerHTML = "Node name: ";
+			var txt = document.createElement("input");
+			txt.setAttribute("type", "text");
+			txt.setAttribute("value", (d.name || ""));
+			pN.appendChild(txt);
 			elementById(detailBoxId).appendChild(pN);
 			if (d.children === undefined || d.children.length === 0) {
 				var pV = document.createElement("p");
@@ -167,6 +172,8 @@ function showNodeDetails(d) {
 
 
 function applyNodeChange(){
+	var originalNodeName = selectedNode.name;
+	selectedNode.name = elementById(detailBoxId).querySelectorAll("p")[0].querySelectorAll("input")[0].value;
 	if (selectedNode.children === undefined || selectedNode.children.length === 0) {
 		selectedNode.textContent = elementById(detailBoxId).querySelectorAll("p")[1].querySelectorAll("input")[0].value;
 	}
@@ -176,9 +183,13 @@ function applyNodeChange(){
 		var attributeValue = listedAttributes[li].querySelectorAll("input")[0].value;
 		selectedNode.attributes[attributeName] = attributeValue;
 	}
+	if(originalNodeName !== selectedNode.name){
+		buildTree(latestData, treeId);
+	}
 }
 
 function buildTree(data, treeContainerId) {
+	elementById(treeContainerId).innerHTML = "";
 	var totalNodes = 0;
 	var maxLabelLength = 0;
 	var selectedNode = null;
