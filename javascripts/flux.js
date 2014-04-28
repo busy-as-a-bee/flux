@@ -16,6 +16,7 @@
 */
 
 var latestData;
+var selectedNode;
 var detailBoxId;
 
 function elementById(id){
@@ -48,10 +49,13 @@ function buildXml(data){
 function iterJsonChild(object) {
 	var node = document.createElement(object.name);
 	try {
-		if (object.attributes !== undefined && object.attributes.length > 0) {
-			for (var a = 0; a < object.attributes.length; a++) {
-				node.setAttribute(object.attributes[a].name, object.attributes[a].value);
-			}
+		if (object.attributes !== undefined) {
+			var attributes = object.attributes;
+			for (var key in attributes) {
+			  if (attributes.hasOwnProperty(key)) {
+				  node.setAttribute(key, attributes[key]);
+			  }
+		  	}
 		}
 		if (object.children !== undefined && object.children.length > 0) {
 			for (var c = 0; c < object.children.length; c++) {
@@ -96,13 +100,9 @@ function iterXmlChild(nodes) {
 			}
 			if (node.attributes !== undefined) {
 				var attributes = node.attributes;
-				child["attributes"] = [];
+				child["attributes"] = {};
 				for (var a = 0; a < attributes.length; a++) {
-					var attr = {};
-					attr["name"] = attributes[a].nodeName;
-					attr["value"] = attributes[a].nodeValue;
-					//child[attributes[a].nodeName] = attributes[a].nodeValue;
-					child["attributes"].push(attr);
+					child["attributes"][attributes[a].nodeName] = attributes[a].nodeValue;
 				}
 			}
 			if (node.childNodes !== undefined && node.childNodes.length > 0) {
@@ -118,6 +118,7 @@ function iterXmlChild(nodes) {
 }
 
 function showNodeDetails(d) {
+	selectedNode = d;
 	if (detailBoxId !== undefined) {
 		if (elementById(detailBoxId) !== undefined) {
 			elementById(detailBoxId).innerHTML = "";
@@ -126,24 +127,54 @@ function showNodeDetails(d) {
 			elementById(detailBoxId).appendChild(pN);
 			if (d.children === undefined || d.children.length === 0) {
 				var pV = document.createElement("p");
-				pV.innerHTML = "Node value: " + (d.textContent || "");
+				pV.innerHTML = "Node value: ";
+				var txt = document.createElement("input");
+				txt.setAttribute("type", "text");
+				txt.setAttribute("value", (d.textContent || ""));
+				pV.appendChild(txt);
 				elementById(detailBoxId).appendChild(pV);
 			}
-			if (d.attributes !== undefined && d.attributes.length > 0) {
+			if (d.attributes !== undefined) {
 				var pA = document.createElement("p");
-				pA.innerHTML = "Attributes:";
-				elementById(detailBoxId).appendChild(pA);
+				pA.innerHTML = "Attributes:";				
 				var ul = document.createElement("ul");
-				for (var a = 0; a < d.attributes.length; a++) {
+				var attributes = d.attributes;
+				var count = 0;
+				for (var key in attributes) {
+				  if (attributes.hasOwnProperty(key)) {
+					  if(count === 0){ //Only append attribute header if some items are added
+					  	elementById(detailBoxId).appendChild(pA);
+					  }
 					var li = document.createElement("li");
-					li.innerHTML = (d.attributes[a].name || "") + ":" + (d.attributes[a].value || "");
+					li.innerHTML = (key || "") + ":";
+					var txt = document.createElement("input");
+					txt.setAttribute("type", "text");
+					txt.setAttribute("value", (attributes[key] || ""));
+					li.appendChild(txt);
 					ul.appendChild(li);
+				  }
 				}
 				elementById(detailBoxId).appendChild(ul);
 			}
-			//Show edit button and write modification back in d.
-			elementById(detailBoxId).style.display = "block";
+			var btn = document.createElement("input");
+			btn.setAttribute("type", "button");
+			btn.setAttribute("value", "Apply");
+			btn.setAttribute("onclick", "applyNodeChange()");
+			elementById(detailBoxId).appendChild(btn);
 		}
+	}
+}
+
+
+function applyNodeChange(){
+	if (selectedNode.children === undefined || selectedNode.children.length === 0) {
+		selectedNode.textContent = elementById(detailBoxId).querySelectorAll("p")[1].querySelectorAll("input")[0].value;
+	}
+	var listedAttributes = elementById(detailBoxId).querySelectorAll("ul")[0].querySelectorAll("li");
+	for(var li = 0; li < listedAttributes.length; li++){
+		var attributeName = listedAttributes[li].innerHTML.split(":")[0];
+		var attributeValue = listedAttributes[li].querySelectorAll("input")[0].value;
+		selectedNode.attributes[attributeName] = attributeValue;
 	}
 }
 
@@ -280,18 +311,18 @@ function buildTree(data, treeContainerId) {
 				domNode = this;
 				initiateDrag(d, domNode);
 			}
-			relCoords = d3.mouse($('svg').get(0));
+			relCoords = d3.mouse(elementById(treeContainerId).querySelectorAll('svg')[0]);
 			if (relCoords[0] < panBoundary) {
 				panTimer = true;
 				pan(this, 'left');
-			} else if (relCoords[0] > ($('svg').width() - panBoundary)) {
+			} else if (relCoords[0] > (elementById(treeContainerId).querySelectorAll('svg').offsetWidth - panBoundary)) {
 
 				panTimer = true;
 				pan(this, 'right');
 			} else if (relCoords[1] < panBoundary) {
 				panTimer = true;
 				pan(this, 'up');
-			} else if (relCoords[1] > ($('svg').height() - panBoundary)) {
+			} else if (relCoords[1] > (elementById(treeContainerId).querySelectorAll('svg').offsetHeight - panBoundary)) {
 				panTimer = true;
 				pan(this, 'down');
 			} else {
