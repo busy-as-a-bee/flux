@@ -48,7 +48,7 @@ function buildXml(data){
 }
 
 function iterJsonChild(object) {
-	var node = document.createElement(object.name);
+	var node = document.createElement(object.name); //This is in HTML and so case insensitive, should change to XML or NS	
 	try {
 		if (object.attributes !== undefined) {
 			var attributes = object.attributes;
@@ -440,6 +440,19 @@ function buildTree(data, treeContainerId) {
 
 		link.exit().remove();
 	};
+	
+	var toggleSelectedNode = (function(){
+		//var currentColor = "white";
+		var currentRadius = 4.5;    		
+	    return function(){
+			//d3.selectAll("circle").style("fill", "white");
+			d3.selectAll("circle").attr("r", 4.5);
+	        //currentColor = d3.select(this).style("fill") == "white" ? "steelblue" : "white";
+			currentRadius = d3.select(this).attr("r") == 4.5 ? 7.5 : 4.5;
+	        //d3.select(this).style("fill", currentColor);
+			d3.select(this).attr("r", currentRadius);
+	    }
+	})();
 
 	function centerNode(source) {
 		scale = zoomListener.scale();
@@ -467,7 +480,7 @@ function buildTree(data, treeContainerId) {
 
 	function click(d) {
 		if (d3.event.defaultPrevented) return;
-		centerNode(d);		
+		centerNode(d);
 		showNodeDetails(d);
 	}
 	
@@ -512,6 +525,7 @@ function buildTree(data, treeContainerId) {
 		nodeEnter.append("circle")
 			.attr('class', 'nodeCircle')
 			.attr("r", 0)
+			.on('click', toggleSelectedNode)
 			.style("fill", function(d) {
 				return d._children ? "lightsteelblue" : "#fff";
 			});
