@@ -34,24 +34,27 @@
 		<section id="main_content" class="inner">
 			<div>
 				<textarea rows="6" cols="100" id="xmlinput"><?xml version="1.0" encoding="UTF-8"?><creature><animal><feline><cat><age>3</age></cat><tiger><age>5</age></tiger></feline></animal><human><boy name="John"><origin>Ireland</origin></boy><girl name="Jane"><origin>Canada</origin></girl></human></creature></textarea> 
-				<button onclick="doFlux('xmlinput', 'treeContainer', 'nodeDetails')">Flux It</button>
+				<button id="fluxbutton">Flux It</button>
 			</div>
 			<div>
 				<div id="treeContainer"></div>
 				<div id="nodeDetails"></div>
 			</div>
 			<div>
-				<span>Click on a node to see its details. Double click to hide children. Drag and drop to change parent.</span><br/>
-				<input type="button" onclick="print('xmloutput')" value="Back to XML"/><br/>
+				<span style="font-size: 11px;">Click on a node to see its details. Double click to hide children. Drag and drop to change parent.</span><br/>
+				<input type="button" id="toxml" value="Back to XML"/><br/>
 				<textarea rows="6" cols="100" id="xmloutput"></textarea> 
 			</div>
+			<script>
+			   	flux();
+			</script>
 		</section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">Benjamin Merot (<a href="https://github.com/tux-o-matic" class="user-mention">@tux-o-matic</a>)</a></p>
+        <p class="copyright">&copy; Benjamin Merot (<a href="https://github.com/tux-o-matic" class="user-mention">@tux-o-matic</a>)</a></p>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>

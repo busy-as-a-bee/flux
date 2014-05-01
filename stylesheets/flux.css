@@ -8,11 +8,17 @@
 
 #nodeDetails
 {
-	width: 170px;
+	width: 180px;
 	height: 340px;
+	padding: 4px;
 	border-radius: 4px;
 	box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
 	float: right;
+}
+
+input[type=text]
+{
+	width: 64px;
 }
 
 .node {
