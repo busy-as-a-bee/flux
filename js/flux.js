@@ -26,11 +26,11 @@
             fluxButtonId : 'fluxbutton',
             toXMLButtonId : 'toxml'
         },
-        version = '1.0.0',
+        version = '1.0.1',
         // Flux error handler.
         FluxError = function (e) {
             this.toString = function () {
-                return 'flux has encountered the error: ' + e;
+                return 'Flux has encountered the error: ' + e;
             };
         },
         // Extends a default object.
@@ -52,7 +52,9 @@
             }
             return modifiedSettings;
         };
-    // Flux constructor.
+	/**
+	 * @constructor
+	 */
     function Flux(settings) {
         // Flux require the d3 library, so if missing we throw a FluxError.
         if (!w.d3) {
@@ -79,7 +81,7 @@
     function flux(settings) {
         return new Flux(settings);
     }
-    
+	    
     Flux.prototype = {
         init : function () {
             var self = this;
@@ -89,7 +91,7 @@
                 this.fluxButton.addEventListener('click', function () {
                     self.doFlux.call(self);
                 }, false);
-            } catch (e) {
+            } catch (parseError) {
                 throw new FluxError('No flux button found with id: ' + this.settings.fluxButtonId);
             }
             // If we have an to XML button attach click handler,
@@ -98,7 +100,7 @@
                 this.toXMLButton.addEventListener('click', function () {
                     self.print.call(self);
                 }, false);
-            } catch (e) {
+            } catch (printError) {
                 throw new FluxError('No to XML button found with id: ' + this.settings.toXMLButtonId);
             }
         },
@@ -107,6 +109,7 @@
                 computedData = {};
             
             this.treeContainer.innerHTML = '';
+			this.detailContainer.innerHTML = '';
             xml = this.parseXML(this.sourceContainer.value.trim());
 
             computedData.name = xml.firstChild.tagName;
@@ -134,7 +137,7 @@
                 j;
                 
             try {
-                if (object.attributes && object.attributes.length) {
+                if (objAtt !== undefined) {
                     for (key in objAtt) {
                         if (objAtt.hasOwnProperty(key)) {
                             node.setAttribute(key, objAtt[key]);
@@ -232,9 +235,9 @@
                 pN.appendChild(pNtxt);
                 this.detailBox.appendChild(pN);
                 // If we have no children or attributes.
-                if (!d.children || !d.attributes.length) {
+                if (d.children === undefined || d.attributes.length === 0) {
                     pV = doc.createElement('p');
-                    pV.innerHTML = 'Node value: ' + (d.textContent || '');
+                    pV.innerHTML = 'Node value: ';
                     pVtxt = doc.createElement('input');
                     pVtxt.setAttribute('type', 'text');
                     pVtxt.setAttribute('value', (d.textContent || ''));
@@ -280,7 +283,7 @@
                 attributeName,
                 attributeValue;
             this.selectedNode.name = this.detailBox.querySelectorAll('p')[0].querySelectorAll('input')[0].value;
-            if (!this.selectedNode.children || !this.selectedNode.children.length) {
+            if (this.selectedNode.children === undefined || this.selectedNode.children.length === 0) {
                 this.selectedNode.textContent = this.detailBox.querySelectorAll('p')[1].querySelectorAll('input')[0].value;
             }
             listedAttributes = this.detailBox.querySelectorAll('ul')[0].querySelectorAll('li');
@@ -290,10 +293,11 @@
                 this.selectedNode.attributes[attributeName] = attributeValue;
             }
             if (originalNodeName !== this.selectedNode.name) {
-                this.buildTree(this.latestData, this.settings.treeContainerId);
+                this.buildTree(this.latestData);
             }
         },
-        buildTree : function (data, treeContainerId) {
+        buildTree : function (data) {
+			this.treeContainer.innerHTML = "";
             var that = this,
                 totalNodes = 0,
                 nodes,
@@ -306,6 +310,7 @@
                 i,
                 duration = 750,
                 root,
+				containerSelector = "#" + this.settings.treeContainerId,
                 viewerWidth = this.treeContainer.offsetWidth,
                 viewerHeight = this.treeContainer.offsetHeight,
                 tree = d3.layout.tree().size([viewerHeight, viewerWidth]),
@@ -363,25 +368,25 @@
                         }, 50);
                     }
                 },
-                initiateDrag = function (d, domNode) {
-                    draggingNode = d;
-                    d3.select(domNode).select('.ghostCircle').attr('pointer-events', 'none');
-                    d3.selectAll('.ghostCircle').attr('class', 'ghostCircle show');
-		            d3.select(domNode).attr('class', 'node activeDrag');
+                initiateDrag = function(d, domNode) {
+                	draggingNode = d;
+                	d3.select(domNode).select('.ghostCircle').attr('pointer-events', 'none');
+                	d3.selectAll('.ghostCircle').attr('class', 'ghostCircle show');
+                	d3.select(domNode).attr('class', 'node activeDrag');
 
-		            svgGroup.selectAll("g.node").sort(function (a) {
-			            return a.id !== draggingNode.id ? 1 : -1;
-		            });
-		            svgGroup.selectAll('path.link').filter(function (d) {
-			            if (d.target.id === draggingNode.id) {
-				            return true;
-			            }
-			            return false;
-		            }).remove();
+                	svgGroup.selectAll("g.node").sort(function(a) {
+                		return a.id !== draggingNode.id ? 1 : -1;
+                	});
+                	svgGroup.selectAll('path.link').filter(function(d) {
+                		if (d.target.id === draggingNode.id) {
+                			return true;
+                		}
+                		return false;
+                	}).remove();
 
-		            dragStarted = false;
+                	dragStarted = false;
                 },
-                baseSvg = d3.select("#treeContainer").append("svg").attr("width", viewerWidth).attr("height", viewerHeight).attr("class", "overlay").call(zoomListener),
+                baseSvg = d3.select(containerSelector).append("svg").attr("width", viewerWidth).attr("height", viewerHeight).attr("class", "overlay").call(zoomListener),
                 updateTempConnector = function () {
 	                var dataArr = [],
 	                    link;
@@ -409,16 +414,12 @@
 		            link.exit().remove();
 	            },
 	            toggleSelectedNode = (function () {
-	                //var currentColor = "white";
-		            var currentRadius = 4.5;    		
-	                return function(){
-			            //d3.selectAll("circle").style("fill", "white");
-			            d3.selectAll("circle").attr("r", 4.5);
-	                    //currentColor = d3.select(this).style("fill") == "white" ? "steelblue" : "white";
-			            currentRadius = d3.select(this).attr("r") == 4.5 ? 7.5 : 4.5;
-	                    //d3.select(this).style("fill", currentColor);
+		            var currentRadius = 4.5;
+	                return function () {
+			            d3.selectAll("circle[r='7.5']").attr("r", 4.5);
+			            currentRadius = d3.select(this).attr("r") == 4.5 ? 7.5 : 4.5; //Must stay as "==" despite JSLint warning
 			            d3.select(this).attr("r", currentRadius);
-	                }
+	                };
 	            }()),
 	            expand = function (d) {
 	                if (d._children) {
@@ -439,15 +440,15 @@
 			            draggingNode = null;
 		            }
 	            },
-                dragListener = d3.behavior.drag()
-	            .on("dragstart", function (d) {
-		            if (d === root) {
-			            return;
-		            }
-		            dragStarted = true;
-		            nodes = tree.nodes(d);
-		            d3.event.sourceEvent.stopPropagation();
-	            })
+				dragListener = d3.behavior.drag()
+					.on("dragstart", function(d) {
+						if (d === root) {
+							return;
+						}
+						dragStarted = true;
+						nodes = tree.nodes(d);
+						d3.event.sourceEvent.stopPropagation();
+					})
 	            .on("drag", function (d) {
 	                var relCoords,
 	                    node;
@@ -609,6 +610,7 @@
 		            nodeEnter.append("circle")
 			            .attr('class', 'nodeCircle')
 			            .attr("r", 0)
+						.on("click", toggleSelectedNode)
 			            .style("fill", function (d) {
 				            return d._children ? "lightsteelblue" : "#fff";
 			            });
