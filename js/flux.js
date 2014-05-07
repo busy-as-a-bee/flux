@@ -89,7 +89,7 @@
             // else throw FluxError.
             try {
                 this.fluxButton.addEventListener('click', function () {
-                    self.doFlux.call(self);
+                    self.doFlux();
                 }, false);
             } catch (parseError) {
                 throw new FluxError('No flux button found with id: ' + this.settings.fluxButtonId);
@@ -98,7 +98,7 @@
             // else throw FluxError.
             try {
                 this.toXMLButton.addEventListener('click', function () {
-                    self.print.call(self);
+                    self.print();
                 }, false);
             } catch (printError) {
                 throw new FluxError('No to XML button found with id: ' + this.settings.toXMLButtonId);
@@ -417,7 +417,8 @@
 		            var currentRadius = 4.5;
 	                return function () {
 			            d3.selectAll("circle[r='7.5']").attr("r", 4.5);
-			            currentRadius = d3.select(this).attr("r") == 4.5 ? 7.5 : 4.5; //Must stay as "==" despite JSLint warning
+			            // + operator to convert String to Number in order to do strict comparison
+			            currentRadius = +d3.select(this).attr("r") === 4.5 ? 7.5 : 4.5;
 			            d3.select(this).attr("r", currentRadius);
 	                };
 	            }()),
@@ -602,7 +603,7 @@
 		            nodeEnter = node.enter().append("g")
 			            .call(dragListener)
 			            .attr("class", "node")
-			            .attr("transform", function (d) {
+			            .attr("transform", function () {
 				            return "translate(" + source.y0 + "," + source.x0 + ")";
 			            })
 			            .on('click', click)
@@ -663,7 +664,7 @@
 			            .style("fill-opacity", 1);
 		            nodeExit = node.exit().transition()
 			            .duration(duration)
-			            .attr("transform", function (d) {
+			            .attr("transform", function () {
 				            return "translate(" + source.y + "," + source.x + ")";
 			            })
 			            .remove();
@@ -677,7 +678,7 @@
 			            });
 		            link.enter().insert("path", "g")
 			            .attr("class", "link")
-			            .attr("d", function (d) {
+			            .attr("d", function () {
 				            var o = {
 					            x: source.x0,
 					            y: source.y0
@@ -692,7 +693,7 @@
 			            .attr("d", diagonal);
 		            link.exit().transition()
 			            .duration(duration)
-			            .attr("d", function (d) {
+			            .attr("d", function () {
 				            var o = {
 					            x: source.x,
 					            y: source.y
