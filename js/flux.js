@@ -219,6 +219,7 @@
                 pV,
                 pA,
                 ul,
+				addbtn,
                 dAttributes,
                 btn,
                 count = 0,
@@ -266,6 +267,13 @@
                         }
                     }
                     this.detailBox.appendChild(ul);
+					addbtn = doc.createElement('input');
+                	addbtn.setAttribute('type', 'button');
+                	addbtn.setAttribute('value', 'Add Attribute');
+                	addbtn.addEventListener('click', function () {
+                		self.addNewAttribute();
+                	});
+                	this.detailBox.appendChild(addbtn);
                 }
                 btn = doc.createElement('input');
                 btn.setAttribute('type', 'button');
@@ -281,22 +289,49 @@
                 listedAttributes,
                 i,
                 attributeName,
-                attributeValue;
+                attributeValue,
+				txtBoxes;
             this.selectedNode.name = this.detailBox.querySelectorAll('p')[0].querySelectorAll('input')[0].value;
             if (this.selectedNode.children === undefined || this.selectedNode.children.length === 0) {
                 this.selectedNode.textContent = this.detailBox.querySelectorAll('p')[1].querySelectorAll('input')[0].value;
             }
             listedAttributes = this.detailBox.querySelectorAll('ul')[0].querySelectorAll('li');
             for (i = 0; i < listedAttributes.length; i++) {
-                attributeName = listedAttributes[i].innerHTML.split(':')[0];
-                attributeValue = listedAttributes[i].querySelectorAll('input')[0].value;
-                this.selectedNode.attributes[attributeName] = attributeValue;
+				txtBoxes = listedAttributes[i].querySelectorAll('input');
+				if (txtBoxes.length === 1) {
+                	attributeName = listedAttributes[i].innerHTML.split(':')[0];
+                	attributeValue = txtBoxes[0].value;
+                	this.selectedNode.attributes[attributeName] = attributeValue;
+				} else if (txtBoxes.length === 2) {
+					attributeName = txtBoxes[0].value;
+                	attributeValue = txtBoxes[1].value;
+					if (this.selectedNode.attributes[attributeName] === undefined) {
+                		this.selectedNode.attributes[attributeName] = attributeValue;
+						listedAttributes[i].removeChild(txtBoxes[0]);
+						listedAttributes[i].insertAdjacentHTML('afterbegin', attributeName);
+					} else {
+						throw new FluxError('Tried to add already defined attribute: ' + attributeName);
+					}
+				}	
             }
             if (originalNodeName !== this.selectedNode.name) {
                 this.buildTree(this.latestData);
             }
         },
-        buildTree : function (data) {
+		addNewAttribute: function() {
+			var ul, li, kTxt, vTxt;
+			ul = this.detailBox.querySelectorAll('ul')[0];
+			li = doc.createElement('li');
+            kTxt = doc.createElement('input');
+            kTxt.setAttribute('type', 'text');
+            li.appendChild(kTxt);
+			li.insertAdjacentHTML('beforeend', ':');
+            vTxt = doc.createElement('input');
+            vTxt.setAttribute('type', 'text');
+			li.appendChild(vTxt);
+            ul.appendChild(li);
+		},
+		buildTree : function (data) {
 			this.treeContainer.innerHTML = "";
             var that = this,
                 totalNodes = 0,
@@ -721,10 +756,20 @@
             sortTree();
             
             root = data;
-	        root.x0 = (viewerHeight / 2);
+	        root.x0 = 0;
 	        root.y0 = 0;
 	        update(root);
-	        centerNode(root);
+            var scale = zoomListener.scale(),
+                x = -root.y0,
+                y = -root.x0;
+                x = x * scale + viewerWidth / 8;
+                y = y * scale + viewerHeight / 2;
+            d3.select('g').transition()
+	            .duration(duration)
+	            .attr("transform", "translate(" + x + "," + y + ")scale(" + scale + ")");
+            zoomListener.scale(scale);
+            zoomListener.translate([x, y]);
+			
 	        this.latestData = root;
         }
     };
