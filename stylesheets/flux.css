@@ -1,24 +1,42 @@
 #treeContainer
 {
 	display: block;
-	width: 520px;
+	width: 720px;
 	height: 340px;
 	float: left;
 }
 
 #nodeDetails
 {
-	width: 180px;
+	width: 220px;
 	height: 340px;
-	padding: 4px;
+	padding: 8px;
 	border-radius: 4px;
 	box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
 	float: right;
 }
 
+#xmlinput
+{
+	float: left;
+}
+
+#fluxbutton
+{
+	width: 180px;
+	height: 60px;
+	float: right;
+	margin: 20px;
+	font-size: 24px;
+}
+
+textarea {
+    resize: none;
+}
+
 input[type=text]
 {
-	width: 64px;
+	width: 80px;
 }
 
 .node {
