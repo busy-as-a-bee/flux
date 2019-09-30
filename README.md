@@ -1,6 +1,6 @@
 # Flux #
 
-### Try it out on http://flux.busyasabee.org
+### Try it out on https://busy-as-a-bee.github.io/flux/
 
 ## Javascript library to visualize XML documents.
 - Parses XML document and renders a graphic representation of nodes using D3.
